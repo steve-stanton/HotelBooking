@@ -1,5 +1,6 @@
 using HotelBooking.Entities;
 using HotelBooking.Requests;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelBooking;
 
@@ -46,5 +47,22 @@ public class BookingService : IBookingService
                 Capacity = capacity
             };
         }
+    }
+
+    /// <inheritdoc cref="IBookingService.GetHotelByName"/>
+    public async Task<HotelDetail?> GetHotelByName(string hotelName)
+    {
+        var hotel = await _context.Hotels
+            .Include(h => h.Rooms)
+            .SingleOrDefaultAsync(h => h.Name == hotelName);
+
+        if (hotel is null)
+            return null;
+        
+        return new HotelDetail(
+            hotel.Name,
+            hotel.Rooms.Count(r => r.Type == "Single"),
+            hotel.Rooms.Count(r => r.Type == "Double"),
+            hotel.Rooms.Count(r => r.Type == "Deluxe"));
     }
 }

@@ -129,4 +129,25 @@ public class BookingService : IBookingService
         await _context.SaveChangesAsync(cancellation);
         return bookingId;
     }
+
+    /// <inheritdoc cref="IBookingService.FindBookingById"/>
+    public async Task<BookingResponse?> FindBookingById(string bookingId, CancellationToken cancellation)
+    {
+        var booking = await _context.Bookings
+            .Include(b => b.Room)
+            .ThenInclude(r => r.Hotel)
+            .SingleOrDefaultAsync(b => b.BookingId == bookingId, cancellation);
+
+        if (booking is null)
+            return null;
+
+        return new BookingResponse(
+            booking.BookingId,
+            booking.Room.Hotel.Name,
+            booking.Room.Name,
+            booking.Room.Type,
+            booking.UserId,
+            booking.MinDate,
+            booking.MaxDate.AddDays(1));
+    }
 }

@@ -79,19 +79,19 @@ public class BookingController : ControllerBase
         if (checkinDate < today)
         {
             return Problem(
-                title: "Invalid request", 
-                detail: "Checkin date must be greater than or equal to today's date.", 
+                title: "Invalid request",
+                detail: "Checkin date must be greater than or equal to today's date.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
         if (checkoutDate <= checkinDate)
         {
             return Problem(
-                title: "Invalid request", 
-                detail: "Checkin date must be greater than or equal to today's date.", 
+                title: "Invalid request",
+                detail: "Checkin date must be greater than or equal to today's date.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
-        
+
         var request = new FindRoomsRequest(hotelId, guestCount, checkinDate, checkoutDate);
         var response = await _bookingService.FindRooms(request, cancellation);
 
@@ -113,7 +113,7 @@ public class BookingController : ControllerBase
         try
         {
             var bookingId = await _bookingService.BookRoom(request, _userPrincipal.UserId, cancellation);
-        
+
             if (bookingId is null)
                 return Conflict("Room is no longer available");
 
@@ -123,5 +123,31 @@ public class BookingController : ControllerBase
         {
             return Problem(e.Message, statusCode: StatusCodes.Status400BadRequest);
         }
+    }
+
+    /// <summary>
+    /// Retrieves booking details, given a unique booking identifier. 
+    /// </summary>
+    /// <param name="bookingId">The booking identifier.</param>
+    /// <param name="cancellation">A cancellation token that can be used to cancel the request.</param>
+    /// <returns>The booking details.</returns>
+    /// <response code="200">The booking details.</response>
+    /// <response code="404">A booking with the specified identifier was not found.</response>
+    /// <response code="401">The user making the request is different from the person who made the booking.</response>
+    [HttpGet(Name = nameof(FindBookingById))]
+    [ProducesResponseType(typeof(BookingResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<BookingResponse?>> FindBookingById(string bookingId, CancellationToken cancellation)
+    {
+        var booking = await _bookingService.FindBookingById(bookingId, cancellation);
+
+        if (booking is null)
+            return NotFound();
+        
+        if (booking.UserId != _userPrincipal.UserId)
+            return Unauthorized();
+
+        return Ok(booking);
     }
 }

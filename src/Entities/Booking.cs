@@ -35,7 +35,7 @@ public class Booking
     /// on a lookup of bookings by hotel).
     /// </remarks>
     public int HotelId { get; set; }
-    
+
     /// <summary>
     /// The checkin date (the first night staying in the room).
     /// </summary>

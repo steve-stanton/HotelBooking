@@ -40,4 +40,12 @@ public interface IBookingService
     /// <returns>The ID assigned to the booking (null if the booking could not be made
     /// because the room is no longer available).</returns>
     Task<string?> BookRoom(BookRoomRequest request, string userId, CancellationToken cancellation);
+
+    /// <summary>
+    /// Retrieves booking details, given a unique booking identifier. 
+    /// </summary>
+    /// <param name="bookingId">The booking identifier.</param>
+    /// <param name="cancellation">A cancellation token that can be used to cancel the request.</param>
+    /// <returns>The booking details (null if the booking could not be found).</returns>
+    Task<BookingResponse?> FindBookingById(string bookingId, CancellationToken cancellation);
 }

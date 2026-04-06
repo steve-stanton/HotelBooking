@@ -36,14 +36,15 @@ public class BookingController : ControllerBase
     /// Retrieves hotel details, given the name of the hotel. 
     /// </summary>
     /// <param name="hotelName">The name of the hotel to retrieve (case-sensitive, no wildcards).</param>
+    /// <param name="cancellation">A cancellation token that can be used to cancel the request.</param>
     /// <response code="200">The hotel details.</response>
     /// <response code="404">A hotel with the specified name was not found.</response>
     [HttpGet("hotel-by-name", Name = nameof(GetHotelByName))]
     [ProducesResponseType(typeof(HotelDetail), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<HotelDetail?>> GetHotelByName(string hotelName)
+    public async Task<ActionResult<HotelDetail?>> GetHotelByName(string hotelName, CancellationToken cancellation)
     {
-        var hotel = await _bookingService.GetHotelByName(hotelName);
+        var hotel = await _bookingService.GetHotelByName(hotelName, cancellation);
 
         if (hotel is null)
             return NotFound();

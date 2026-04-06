@@ -19,8 +19,9 @@ public interface IBookingService
     /// Retrieves hotel details, given the name of the hotel.
     /// </summary>
     /// <param name="hotelName">The name of the hotel to retrieve (case-sensitive, no wildcards).</param>
+    /// <param name="cancellation">A cancellation token that can be used to cancel the request.</param>
     /// <returns>The hotel details (null if not found).</returns>
-    Task<HotelDetail?> GetHotelByName(string hotelName);
+    Task<HotelDetail?> GetHotelByName(string hotelName, CancellationToken cancellation);
     
     /// <summary>
     /// Attempts to find rooms that are available for booking.

@@ -51,11 +51,11 @@ public class BookingService : IBookingService
     }
 
     /// <inheritdoc cref="IBookingService.GetHotelByName"/>
-    public async Task<HotelDetail?> GetHotelByName(string hotelName)
+    public async Task<HotelDetail?> GetHotelByName(string hotelName, CancellationToken cancellation)
     {
         var hotel = await _context.Hotels
             .Include(h => h.Rooms)
-            .SingleOrDefaultAsync(h => h.Name == hotelName);
+            .SingleOrDefaultAsync(h => h.Name == hotelName, cancellation);
 
         if (hotel is null)
             return null;

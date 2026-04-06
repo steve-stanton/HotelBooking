@@ -28,7 +28,10 @@ public class BookingContext : DbContext
         var hotels = modelBuilder.Entity<Hotel>();
         hotels.HasKey(h => h.HotelId);
         hotels.Property(h => h.HotelId).ValueGeneratedOnAdd().UseIdentityColumn(1000);
-        hotels.HasMany<Room>();
+        hotels
+            .HasMany(h => h.Rooms)
+            .WithOne(r => r.Hotel)
+            .HasForeignKey(r => r.HotelId);
         hotels.Property(h => h.Name).HasMaxLength(100);
         hotels.HasIndex(h => h.Name).IsUnique();
 

@@ -1,3 +1,4 @@
+using HotelBooking;
 using HotelBooking.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,15 +7,21 @@ var services = builder.Services;
 
 // Add services to the container.
 
-services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 services
-    .AddOpenApi()
+    .AddOpenApi() // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
     .AddDbContext<BookingContext>(options =>
     {
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         options.UseSqlServer(connectionString);
-    });
+    })
+    .AddScoped<IBookingService, BookingService>()
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen(options =>
+    {
+        var docPath = Path.Combine(AppContext.BaseDirectory, "HotelBooking.xml");
+        options.IncludeXmlComments(docPath);
+    })
+    .AddControllers();
 
 var app = builder.Build();
 
@@ -22,6 +29,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "HotelBooking v1");
+    });
 }
 
 app.UseHttpsRedirection();

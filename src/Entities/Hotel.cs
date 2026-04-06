@@ -14,4 +14,9 @@ public class Hotel
     /// The user-perceived name of the hotel.
     /// </summary>
     public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Navigation property to access the rooms in the hotel.
+    /// </summary>
+    public List<Room> Rooms { get; set; } = new();
 }

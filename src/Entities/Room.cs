@@ -16,6 +16,11 @@ public class Room
     public int HotelId { get; set; }
 
     /// <summary>
+    /// Navigation property to get the associated hotel.
+    /// </summary>
+    public Hotel Hotel { get; set; } = null!;
+    
+    /// <summary>
     /// The name of the room (typically the room number).
     /// All room names for a given hotel must be unique.
     /// </summary>

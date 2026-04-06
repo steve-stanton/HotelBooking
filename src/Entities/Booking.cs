@@ -22,6 +22,11 @@ public class Booking
     public int RoomId { get; set; }
 
     /// <summary>
+    /// Navigation property to get the associated room.
+    /// </summary>
+    public Room Room { get; set; } = null!;
+
+    /// <summary>
     /// The ID of the <see cref="Hotel"/> that the room is in.
     /// </summary>
     /// <remarks>

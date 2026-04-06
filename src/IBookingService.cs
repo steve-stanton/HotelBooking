@@ -1,5 +1,6 @@
 using HotelBooking.Entities;
 using HotelBooking.Requests;
+using HotelBooking.Responses;
 
 namespace HotelBooking;
 
@@ -20,4 +21,12 @@ public interface IBookingService
     /// <param name="hotelName">The name of the hotel to retrieve (case-sensitive, no wildcards).</param>
     /// <returns>The hotel details (null if not found).</returns>
     Task<HotelDetail?> GetHotelByName(string hotelName);
+    
+    /// <summary>
+    /// Attempts to find rooms that are available for booking.
+    /// </summary>
+    /// <param name="request">The request parameters.</param>
+    /// <param name="cancellation">A cancellation token that can be used to cancel the request.</param>
+    /// <returns>A list of the suitable rooms (if any) that are available.</returns>
+    Task<FindRoomsResponse> FindRooms(FindRoomsRequest request, CancellationToken cancellation);
 }

@@ -60,4 +60,9 @@ public class Room
     /// Following a conflict, the user will need to make a further request to retrieve the latest room availability.
     /// </remarks>
     public int ConflictCount { get; set; }
+
+    /// <summary>
+    /// Navigation property to access the bookings for the room.
+    /// </summary>
+    public List<Booking> Bookings { get; set; } = new();
 }

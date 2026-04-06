@@ -14,6 +14,7 @@ services
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         options.UseSqlServer(connectionString);
     })
+    .AddSingleton(TimeProvider.System)
     .AddScoped<IBookingService, BookingService>()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>

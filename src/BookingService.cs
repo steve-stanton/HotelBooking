@@ -18,7 +18,7 @@ public class BookingService : IBookingService
     }
 
     /// <inheritdoc cref="IBookingService.SeedDatabase"/>
-    public async Task SeedDatabase(SeedDatabaseRequest request)
+    public async Task SeedDatabase(SeedDatabaseRequest request, CancellationToken cancellation)
     {
         _context.Hotels.AddRange(request.Hotels.Select(h =>
         {
@@ -34,7 +34,20 @@ public class BookingService : IBookingService
             };
         }));
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellation);
+    }
+
+    /// <inheritdoc cref="IBookingService.ResetDatabase"/>
+    public async Task ResetDatabase(CancellationToken cancellation)
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellation);
+        
+        _context.Bookings.RemoveRange(_context.Bookings);
+        _context.Rooms.RemoveRange(_context.Rooms);
+        _context.Hotels.RemoveRange(_context.Hotels);
+        
+        await _context.SaveChangesAsync(cancellation);
+        await transaction.CommitAsync(cancellation);
     }
 
     private IEnumerable<Room> CreateRooms(int firstRoomNumber, int roomCount, string type, int capacity)

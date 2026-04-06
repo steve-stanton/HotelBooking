@@ -25,13 +25,30 @@ public class BookingController : ControllerBase
     /// <summary>
     /// Seeds the database with a set of hotels and rooms (without any bookings).
     /// </summary>
+    /// <param name="databaseRequest">Details for items to insert into the database.</param>
+    /// <param name="cancellation">A cancellation token that can be used to cancel the request.</param>
+    /// <response code="201">Database initialized with seed data.</response>
     [HttpPost("admin/seed-database", Name = nameof(SeedDatabase))]
-    public async Task<ActionResult> SeedDatabase(SeedDatabaseRequest databaseRequest)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<ActionResult> SeedDatabase(SeedDatabaseRequest databaseRequest, CancellationToken cancellation)
     {
-        await _bookingService.SeedDatabase(databaseRequest);
+        await _bookingService.SeedDatabase(databaseRequest, cancellation);
         return Created();
     }
 
+    /// <summary>
+    /// Resets the database to its initial state.
+    /// </summary>
+    /// <param name="cancellation">A cancellation token that can be used to cancel the request.</param>
+    /// <response code="200">Database has been reset.</response>
+    [HttpPost("admin/reset-database", Name = nameof(ResetDatabase))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> ResetDatabase(CancellationToken cancellation)
+    {
+        await _bookingService.ResetDatabase(cancellation);
+        return Ok();
+    }
+    
     /// <summary>
     /// Retrieves hotel details, given the name of the hotel. 
     /// </summary>

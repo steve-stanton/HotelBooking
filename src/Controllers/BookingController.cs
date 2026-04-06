@@ -9,13 +9,16 @@ namespace HotelBooking.Controllers;
 public class BookingController : ControllerBase
 {
     private readonly IBookingService _bookingService;
+    private readonly IUserPrincipal _userPrincipal;
     private readonly TimeProvider _timeProvider;
 
     public BookingController(
         IBookingService bookingService,
+        IUserPrincipal userPrincipal,
         TimeProvider timeProvider)
     {
         _bookingService = bookingService;
+        _userPrincipal = userPrincipal;
         _timeProvider = timeProvider;
     }
 
@@ -92,5 +95,32 @@ public class BookingController : ControllerBase
         var response = await _bookingService.FindRooms(request, cancellation);
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Attempts to book a room.
+    /// </summary>
+    /// <param name="request">The booking request parameters.</param>
+    /// <param name="cancellation">A cancellation token that can be used to cancel the request.</param>
+    /// <returns>The booking confirmation.</returns>
+    [HttpPost(Name = nameof(BookRoom))]
+    [ProducesResponseType(typeof(BookRoomResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<BookRoomResponse>> BookRoom(BookRoomRequest request, CancellationToken cancellation)
+    {
+        try
+        {
+            var bookingId = await _bookingService.BookRoom(request, _userPrincipal.UserId, cancellation);
+        
+            if (bookingId is null)
+                return Conflict("Room is no longer available");
+
+            return Created($"/booking/{bookingId}", new BookRoomResponse(bookingId));
+        }
+        catch (ArgumentException e)
+        {
+            return Problem(e.Message, statusCode: StatusCodes.Status400BadRequest);
+        }
     }
 }

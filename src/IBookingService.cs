@@ -29,4 +29,14 @@ public interface IBookingService
     /// <param name="cancellation">A cancellation token that can be used to cancel the request.</param>
     /// <returns>A list of the suitable rooms (if any) that are available.</returns>
     Task<FindRoomsResponse> FindRooms(FindRoomsRequest request, CancellationToken cancellation);
+    
+    /// <summary>
+    /// Attempts to book a room.
+    /// </summary>
+    /// <param name="request">The booking request parameters.</param>
+    /// <param name="userId">The ID of the user making the booking.</param>
+    /// <param name="cancellation">A cancellation token that can be used to cancel the request.</param>
+    /// <returns>The ID assigned to the booking (null if the booking could not be made
+    /// because the room is no longer available).</returns>
+    Task<string?> BookRoom(BookRoomRequest request, string userId, CancellationToken cancellation);
 }

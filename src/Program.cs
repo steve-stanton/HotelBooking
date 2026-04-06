@@ -15,6 +15,7 @@ services
         options.UseSqlServer(connectionString);
     })
     .AddSingleton(TimeProvider.System)
+    .AddSingleton<IUserPrincipal, AnonymousUser>() // no authentication
     .AddScoped<IBookingService, BookingService>()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>

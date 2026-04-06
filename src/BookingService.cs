@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
 using HotelBooking.Entities;
 using HotelBooking.Requests;
 using HotelBooking.Responses;
@@ -88,5 +87,46 @@ public class BookingService : IBookingService
             rooms.Select(r =>
                 new AvailableRoom(r.RoomId, r.BookingCount)).ToArray()
             );
+    }
+
+    /// <inheritdoc cref="IBookingService.BookRoom"/>
+    /// <exception cref="ArgumentException">Thrown if the request contains details that don't match the room details.</exception>'
+    public async Task<string?> BookRoom(BookRoomRequest request, string userId, CancellationToken cancellation)
+    {
+        var room = await _context.Rooms.FindAsync([request.Room.RoomId], cancellation);
+        if (room is null)
+            throw new ArgumentException("Unexpected room ID");
+        
+        if (room.HotelId != request.Requirement.HotelId)
+            throw new ArgumentException("Unexpected hotel ID");
+        
+        if (room.Capacity < request.Requirement.GuestCount)
+            throw new ArgumentException("Room capacity is not large enough");
+        
+        // Check to see if someone else has recently booked the room. If so, increment the conflict count
+        // and return with an undefined booking ID.
+        if (room.BookingCount != request.Room.BookingCount)
+        {
+            room.ConflictCount++;
+            await _context.SaveChangesAsync(cancellation);
+            return null;
+        }
+        
+        // Make the booking. If database access is heavily concurrent, it's conceivable that someone else
+        // could be making a simultaneous booking for the same room. In that case, the database should
+        // end up with a primary key conflict.
+        var bookingId = $"{request.Room.RoomId}.{request.Room.BookingCount + 1}";
+        room.BookingCount++;
+        _context.Bookings.Add(new Booking
+        {
+            BookingId = bookingId,
+            RoomId = room.RoomId,
+            HotelId = room.HotelId,
+            MinDate = request.Requirement.Checkin,
+            MaxDate = request.Requirement.Checkout.AddDays(-1),
+            UserId = userId
+        });
+        await _context.SaveChangesAsync(cancellation);
+        return bookingId;
     }
 }

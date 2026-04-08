@@ -3,6 +3,14 @@ using HotelBooking.Entities;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("AzureConnection");
+if (String.IsNullOrWhiteSpace(connectionString))
+{
+    Console.WriteLine("No Azure connection string found, using local connection");
+    connectionString = builder.Configuration.GetConnectionString("LocalConnection");
+}
+
 var services = builder.Services;
 
 // Add services to the container.
@@ -11,7 +19,6 @@ services
     .AddOpenApi() // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
     .AddDbContext<BookingContext>(options =>
     {
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         options.UseSqlServer(connectionString);
     })
     .AddSingleton(TimeProvider.System)

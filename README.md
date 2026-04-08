@@ -83,6 +83,29 @@ To see my progress on each task, have a look at the github issues. I'll assign t
 when I start it. And mark it as closed when I finish the work. I'll add comments to each issue if
 I discover something I hadn't thought of.
 
+# Retrospective
 
+I've now had a few days to think about the requirements, and I start to
+wonder if I was right to assume that the API is meant to be called by a frontend app.
+My clue is that we now have a `/booking/find-rooms` endpoint that returns a list of
+available rooms. What is my end-user going to do with that?
 
+Real booking systems do not present users with a list of rooms that they can select
+from. When I book a room at a hotel, I would expect them to confirm that they have
+the space to accommodate me, but I doubt that they would immediately allocate a room.
+I think it's more likely that they would do that much closer to my arrival date.
+That would give the hotel the ability to optimize room allocation based on confirmed
+demand. For example, the hotel might have a policy to only open up a specific floor
+once all other floors have been fully occupied (perhaps to save on heating bills).
 
+In that scenario, the requirement to return all available rooms makes perfect sense,
+but it would be called from a room allocation service rather than a user-facing
+frontend. That being the case, I would probably need to revisit my database model
+because each booking ID currently includes the allocated room ID. My `Booking`
+entity is more like an `AllocatedRoom` entity.
+
+In this instance, I have a fair idea what a real booking system might require because
+booking a hotel room is something that everyone has done at some point. More
+generally, developers will need to gain some domain knowledge before embarking on
+a project. I would think that this can best be achieved by involving developers
+while building the business case for a project.

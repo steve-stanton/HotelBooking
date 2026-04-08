@@ -48,17 +48,6 @@ its ID), while the endpoint to find booking details will return just the Booking
 
 # Environment
 
-## Coding UI
-
-I have 3 choices:
-
-* VisualStudio 2026 Community Edition
-* VisualStudio Code
-* JetBrains Rider 2025.3.2
-
-While VisualStudio probably aligns better with the dotnet documentation, I decided to work
-with JetBrains Rider - only because its the IDE I've been using for the last 3 years.
-
 ## Database
 
 A relational database will deal with the requirements just fine.
@@ -82,6 +71,19 @@ take "2 or 3 hours" (hmmm), I figured that merging directly to main is fine.
 To see my progress on each task, have a look at the github issues. I'll assign the issue to myself
 when I start it. And mark it as closed when I finish the work. I'll add comments to each issue if
 I discover something I hadn't thought of.
+
+# Challenges
+
+* Not entirely sure about the best way to document the API these days. I stuck with swagger because
+I've used that in the past. But I seem to recall that there may now be alternatives - something to
+look into perhaps. I did have some difficulty getting the swagger pages to pick up xml code comments
+when using MinimalApi. I switched back to using a Controller class, since that's what I usually see,
+and xml code comments work in that case.
+<br/><br/>
+* I just started looking into setting up my Azure SQL database. Setting things up with the right
+permissions is a bit of a maze. It looks like things have moved on since I last had to think about
+this, so I need to do a bit of a catchup to learn current best practice For the purpose of the tech test,
+I think the easiest would be just to allow SQL logins.
 
 # Retrospective
 
